@@ -24,9 +24,12 @@ public class SecurityAuthenticationEntryPoint implements AuthenticationEntryPoin
 
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
+		log.info("method: " + request.getMethod());
 		log.info("尚未登录:" + authException.getMessage());
-		response.sendRedirect(request.getContextPath() + "/login");
 
+		// response.sendRedirect(request.getContextPath() + "/login");
+
+		response.sendRedirect(auth_server + "/login");
 		// ResponseUtils.renderJson(request, response, ResultCode.UNLOGIN, null);
 	}
 }

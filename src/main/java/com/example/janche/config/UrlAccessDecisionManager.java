@@ -37,11 +37,6 @@ public class UrlAccessDecisionManager implements AccessDecisionManager {
          return;
         }*/
 
-        // 判断用户是否在其他客户端退出
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = (String) authentication.getPrincipal();
-        String isLogin = (String) redisTemplate.opsForValue().get(Constant.REDIS_PERM_KEY_PREFIX + username);
-
         Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
         Iterator<ConfigAttribute> iterator = collection.iterator();
         while (iterator.hasNext()) {
@@ -52,9 +47,6 @@ public class UrlAccessDecisionManager implements AccessDecisionManager {
                 if (auth instanceof AnonymousAuthenticationToken) {
                     throw new BadCredentialsException("用户未登录");
                 } else {
-                    if(StringUtils.isEmpty(isLogin)){
-                        throw new BadCredentialsException("用户已在其他客户端退出");
-                    }
                     return;
                 }
             }
