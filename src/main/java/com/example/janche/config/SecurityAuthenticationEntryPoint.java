@@ -1,7 +1,6 @@
 package com.example.janche.config;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
@@ -19,17 +18,12 @@ import java.io.IOException;
 @Slf4j
 public class SecurityAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-	@Value("${auth-server}")
-	public String auth_server;
-
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException {
 		log.info("method: " + request.getMethod());
 		log.info("尚未登录:" + authException.getMessage());
 
-		// response.sendRedirect(request.getContextPath() + "/login");
-
-		response.sendRedirect(auth_server + "/login");
+		response.sendRedirect(request.getContextPath() + "/login");
 		// ResponseUtils.renderJson(request, response, ResultCode.UNLOGIN, null);
 	}
 }

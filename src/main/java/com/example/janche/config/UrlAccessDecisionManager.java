@@ -22,20 +22,7 @@ import java.util.Iterator;
 @Component("urlAccessDecisionManager")
 public class UrlAccessDecisionManager implements AccessDecisionManager {
 
-    // /**
-    //  * 当前激活的配置文件
-    //  */
-    // @Value("${spring.profiles.active}")
-    // private String env;
-
-    @Autowired
-    private RedisTemplate redisTemplate;
-
     public void decide(Authentication auth, Object o, Collection<ConfigAttribute> collection) throws AccessDeniedException, AuthenticationException {
-        // 开发环境不启用权限验证
-        /*if (StringUtils.equals(env, "dev,errorcode") || true) {
-         return;
-        }*/
 
         Collection<? extends GrantedAuthority> authorities = auth.getAuthorities();
         Iterator<ConfigAttribute> iterator = collection.iterator();

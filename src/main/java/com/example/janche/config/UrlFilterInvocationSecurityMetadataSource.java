@@ -13,9 +13,9 @@ import org.springframework.security.web.FilterInvocation;
 import org.springframework.security.web.access.intercept.FilterInvocationSecurityMetadataSource;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -36,25 +36,22 @@ public class UrlFilterInvocationSecurityMetadataSource implements FilterInvocati
     public Collection<ConfigAttribute> getAttributes(Object o) throws IllegalArgumentException {
 
         HttpServletRequest request = ((FilterInvocation) o).getHttpRequest();
+        HttpServletResponse response = ((FilterInvocation) o).getHttpResponse();
 
-        // 获取Redis中用户的登录标志 判断此用户有没有在其他客户端退出
+        // 获取Redis中用户的登录信息
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = (String) authentication.getPrincipal();
-        String isLogin = (String) redisTemplate.opsForValue().get(Constant.REDIS_PERM_KEY_PREFIX + username);
-        if(StringUtils.isEmpty(isLogin)){
-            throw new AccountExpiredException("用户已在其他客户端退出");
+        List<Map<String, String[]>> menuMap = (List<Map<String, String[]>>) redisTemplate.opsForValue().get(Constant.REDIS_PERM_KEY_PREFIX + username);
+        // 判断此用户是否登录，是否在其他客户端退出
+        if(null == menuMap){
+            throw new AccountExpiredException("用户已在其他客户端退出 或 未登录");
         }
-
-        // 获取此URL需要的角色集合
-        List<Map<String, String[]>> menuMap = (List<Map<String, String[]>>) redisTemplate.opsForValue().get(Constant.REDIS_PERM_KEY_PREFIX);
-        if (null != menuMap) {
-            for (Map<String, String[]> map : menuMap) {
-                for (String url : map.keySet()) {
-                    String[] split = url.split(":");
-                    AntPathRequestMatcher antPathMatcher = new AntPathRequestMatcher(split[0], split[1]);
-                    if(antPathMatcher.matches(request)){
-                        return SecurityConfig.createList(map.get(url));
-                    }
+        for (Map<String, String[]> map : menuMap) {
+            for (String url : map.keySet()) {
+                String[] split = url.split(":");
+                AntPathRequestMatcher antPathMatcher = new AntPathRequestMatcher(split[1], split[0]);
+                if(antPathMatcher.matches(request)){
+                    return SecurityConfig.createList(map.get(url));
                 }
             }
         }
