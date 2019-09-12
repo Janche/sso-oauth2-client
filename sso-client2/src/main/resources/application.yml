@@ -1,0 +1,41 @@
+# 认证中心的地址
+auth-server: http://localhost:9999
+server:
+  port: 8087
+  servlet:
+    session:
+      timeout: 15s
+      cookie:
+        name: C2-SESSION
+security:
+  oauth2:
+    client:
+      client-id: janche2
+      client-secret: 123456
+      user-authorization-uri: ${auth-server}/oauth/authorize
+      access-token-uri: ${auth-server}/oauth/token
+    resource:
+      jwt:
+        key-uri: ${auth-server}/oauth/token_key
+      userInfoUri: ${auth-server}/user/oauth/sso
+      token-info-uri: ${auth-server}/oauth/check_token
+
+
+spring:
+  #redis
+  redis:
+    database: 0
+    # Redis服务器地址
+    host: 127.0.0.1
+    port: 6379
+    password:
+    timeout: 5000ms
+
+    jedis:
+      pool:
+        # 连接池中的最大连接数
+        max-active: 8
+        # 连接池中的最大空闲连接
+        max-idle: 8
+        min-idle: 0
+        max-wait: -1ms

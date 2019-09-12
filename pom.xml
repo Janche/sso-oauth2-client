@@ -9,6 +9,11 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>sso-oauth2-client</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>sso-client1</module>
+        <module>sso-client2</module>
+    </modules>
 
     <dependencies>
         <dependency>
